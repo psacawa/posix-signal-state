@@ -99,7 +99,7 @@ void print_signals(pid_t target_pid) {
 
 int main(int argc, char *argv[]) {
   int opt;
-  while ((opt = getopt(argc, argv, "pbicah")) != -1) {
+  while ((opt = getopt(argc, argv, "pbich")) != -1) {
     switch (opt) {
     case 'p':
       pending = 1;
@@ -113,21 +113,17 @@ int main(int argc, char *argv[]) {
     case 'c':
       caught = 1;
       break;
-    case 'a':
-      pending = 1;
-      blocked = 1;
-      ignored = 1;
-      caught = 1;
-      break;
     case 'h':
-      fprintf(stderr, "Użycie: %s -[pbica] [-h] (pid)+\n", argv[0]);
+      fprintf(stderr, "Użycie: %s -[pbic] [-h] (pid)+\n", argv[0]);
       exit(EXIT_FAILURE);
-    default:
-      break;
-      fprintf(stderr, "nieznana opcja: %c\n", opt);
+    case '?':
       exit(EXIT_FAILURE);
     }
   }
+
+  /* if no signal info type was specfied, show all information */
+  if (!pending && !blocked && !ignored && !caught)
+    pending = blocked = ignored = caught = 1;
 
   if (optind >= argc) {
     fprintf(stderr, "brak pida\n");
