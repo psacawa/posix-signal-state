@@ -71,7 +71,11 @@ void print_signals(pid_t target_pid) {
   char filename[len];
   sprintf(filename, STATUS_FILENAME_TEMPLATE, target_pid);
 
-  FILE *file = DIE_IF_NULL(fopen(filename, "r"));
+  FILE *file = fopen(filename, "r");
+  if (file == NULL) {
+    fprintf(stderr, "No pid %d\n", target_pid);
+    exit(1);
+  }
 
   ssize_t num_bytes_read;
   char *line = NULL;
@@ -134,7 +138,7 @@ int main(int argc, char *argv[]) {
     char *end;
     pid_t target_pid = strtoul(argv[i], &end, 10);
     if (end - argv[i] != strlen(argv[i])) {
-      fprintf(stderr, "Nie mozna interpretować jako pid: %s", argv[i]);
+      fprintf(stderr, "Nie mozna interpretować jako pid: %s\n", argv[i]);
       exit(EXIT_FAILURE);
     }
     print_signals(target_pid);
